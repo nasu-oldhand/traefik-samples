@@ -1,22 +1,19 @@
 version : "3"
-volumes:
-  kc_postgres_data:
-      driver: local
 
 networks:
   web:
     external:
-      name: traefik_web
+      name: traefik-proxy_web
 
 services:
   kc-postgres:
     image: postgres
-    volumes:
-      - kc_postgres_data:/var/lib/postgresql/data
     environment:
       POSTGRES_DB: keycloak
       POSTGRES_USER: keycloak
       POSTGRES_PASSWORD: password
+    networks:
+      - web
   keycloak:
     image: jboss/keycloak:7.0.1
     container_name: keycloak
@@ -44,4 +41,4 @@ services:
       traefik.host: keycloak
       traefik.http.routers.keycloak.entrypoints: http
       traefik.http.services.keycloak.loadbalancer.server.port: 8180
-      traefik.docker.network: traefik_web
+      traefik.docker.network: traefik-proxy_web

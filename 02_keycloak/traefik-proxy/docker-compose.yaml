@@ -1,47 +1,17 @@
-version : "3"
-volumes:
-  kc_postgres_data:
-      driver: local
-
+version: '3'
 networks:
   web:
-    external:
-      name: traefik_web
+    driver: bridge
 
 services:
-  kc-postgres:
-    image: postgres
+  reverse-proxy:
+    image: traefik:v2.1 # The official Traefik docker image
+    ports:
+      - "8090:80"     # The HTTP port
+      - "8080:8080" # The Web UI (enabled by --api)
+      - "8091:443"
     volumes:
-      - kc_postgres_data:/var/lib/postgresql/data
-    environment:
-      POSTGRES_DB: keycloak
-      POSTGRES_USER: keycloak
-      POSTGRES_PASSWORD: password
-  keycloak:
-    image: jboss/keycloak:7.0.1
-    container_name: keycloak
-    restart: always
-    expose:
-      - 8180
-    environment:
-      DB_VENDOR: POSTGRES
-      DB_ADDR: kc-postgres
-      DB_DATABASE: keycloak
-      DB_USER: keycloak
-      DB_SCHEMA: public
-      DB_PASSWORD: password
-      KEYCLOAK_USER: admin
-      KEYCLOAK_PASSWORD: admin
+      - /var/run/docker.sock:/var/run/docker.sock # So that Traefik can listen to the Docker events
+      - ./traefik.yaml:/etc/traefik/traefik.yml
     networks:
       - web
-    command: |
-      -Djboss.socket.binding.port-offset=100
-    depends_on:
-      - kc-postgres
-    tty: true
-    labels:
-      traefik.enable: true
-      traefik.host: keycloak
-      traefik.http.routers.keycloak.entrypoints: http
-      traefik.http.services.keycloak.loadbalancer.server.port: 8180
-      traefik.docker.network: traefik_web

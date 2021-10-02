@@ -14,6 +14,8 @@ services:
       POSTGRES_PASSWORD: password
     networks:
       - web
+    labels: 
+      - "traefik.enable=false"
   keycloak:
     image: jboss/keycloak:7.0.1
     container_name: keycloak
@@ -37,8 +39,6 @@ services:
       - kc-postgres
     tty: true
     labels:
-      traefik.enable: true
-      traefik.host: keycloak
-      traefik.http.routers.keycloak.entrypoints: http
-      traefik.http.services.keycloak.loadbalancer.server.port: 8180
-      traefik.docker.network: traefik-proxy_web
+      - "traefik.enable=true"
+      - "traefik.http.routers.keycloak.rule=Host(`keycloak.localhost`)"
+      - "traefik.http.services.keycloak.loadbalancer.server.port=8180"

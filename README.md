@@ -59,16 +59,22 @@ docker-compose -f 01_quick-start/traefik-and-otherwhoami.yaml down
 ## keycloak
 
 ```bash
-# 起動
+# プロキシサーバー 起動
 docker-compose -f 02_keycloak/traefik-proxy/docker-compose.yaml up -d
 
+# keycloak 起動
 docker-compose -f 02_keycloak/keycloak-app/docker-compose.yaml up -d
 
-curl http://localhost:8090 -H Host:keycloak.192.168.1.50.nip.io
+# keycloak 終了
+docker-compose -f 02_keycloak/keycloak-app/docker-compose.yaml down
 
-# 終了
-docker-compose -f quick-start/docker-compose.yaml down
+# プロキシサーバー 終了
+docker-compose -f 02_keycloak/traefik-proxy/docker-compose.yaml down
 ```
+
+**ブラウザで開く場合**
+
++ `http://keycloak.localhost:8090/`
 
 ## 参考にしたサイト
 

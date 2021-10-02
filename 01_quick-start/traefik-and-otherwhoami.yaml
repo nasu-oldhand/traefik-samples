@@ -1,0 +1,31 @@
+version: "3.3"
+
+services:
+  reverse-proxy:
+    image: traefik:v2.5
+    command:
+      - --log.level=INFO
+      - --api.insecure=true
+      # - --entrypoints.web.address=:80
+      - --providers.docker
+
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+    labels:
+      traefik.http.routers.dash.rule: Host(`dash.localhost`)
+      traefik.http.routers.dash.service: api@internal
+
+    ports:
+      - "8090:80"
+      - "8080:8080"
+
+  whoami-c:
+    image: containous/whoami # https://hub.docker.com/r/containous/whoami
+    labels: # auto-detects port 80 in next line
+      traefik.http.routers.whoami-c.rule: Host(`whoami-c.localhost`)
+
+  whoami-j:
+    image: jwilder/whoami # https://hub.docker.com/r/jwilder/whoami/
+    labels: # auto-detects port 8000 in next line
+      traefik.http.routers.whoami-j.rule: Host(`whoami-j.localhost`)

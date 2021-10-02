@@ -18,9 +18,11 @@ services:
     # A container that exposes an API to show its IP address
     image: traefik/whoami
     labels:
-      - "traefik.http.routers.whoami-1.rule=Host(`whoami-1.docker.localhost`)"
+      # - "traefik.http.routers.whoami-1.rule=Host(`whoami-1.docker.localhost`)"
+      - "traefik.http.routers.whoami-1.rule=Host(`whoami-1.localhost`)"
   whoami-2:
     # A container that exposes an API to show its IP address
     image: traefik/whoami
     labels:
-      - "traefik.http.routers.whoami-2.rule=Host(`whoami-2.docker.localhost`)"
+      # - "traefik.http.routers.whoami-2.rule=Host(`whoami-2.docker.localhost`)"
+      - "traefik.http.routers.whoami-2.rule=Host(`whoami-2.localhost`)"
